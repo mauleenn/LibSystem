@@ -50,4 +50,41 @@ public class LibraryDAO {
 
         return check;
     }
+
+    public static int addBook(String bookName, String bookAuthor, int bookQuantity) {
+
+        int status = 0;
+
+        try {
+            Connection conn = SqlConnection.dbConnect();
+            PreparedStatement preparedstm = conn
+                    .prepareStatement("INSERT INTO Books (book_name, book_author,quantity) VALUES (?, ?, ?)");
+
+            preparedstm.setString(1, bookName);
+            preparedstm.setString(2, bookAuthor);
+            preparedstm.setInt(3, bookQuantity);
+            status = preparedstm.executeUpdate();
+            conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return status;
+    }
+
+    public static int removeBook(int bookID) {
+
+        int status = 0;
+
+        try {
+            Connection conn = SqlConnection.dbConnect();
+            PreparedStatement preparedstm = conn.prepareStatement("DELETE FROM Books WHERE book_id = ?");
+
+            preparedstm.setInt(1, bookID);
+            status = preparedstm.executeUpdate();
+            conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return status;
+    }
 }

@@ -63,6 +63,13 @@ public class createAccount extends JFrame {
             }
         });
 
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                login window = new login();
+            }
+        });
+
 
     }
 
