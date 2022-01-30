@@ -87,4 +87,28 @@ public class LibraryDAO {
         }
         return status;
     }
+
+    public static boolean login(String username, String password) {
+        boolean status = false;
+
+        try {
+            Connection conn = SqlConnection.dbConnect();
+            PreparedStatement preparedstm = conn
+                    .prepareStatement("SELECT * FROM Users WHERE username=? AND password=? ");
+
+            preparedstm.setString(1, username);
+            preparedstm.setString(2, password);
+
+            ResultSet rs = preparedstm.executeQuery();
+            status = rs.next();
+            conn.close();
+        }
+
+        catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return status;
+
+    }
 }

@@ -6,26 +6,29 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class createAccount extends JFrame {
+public class account extends JFrame {
     private JPasswordField passwordTxtField;
     private JTextField usernameTxtField;
     private JLabel usernameLabel;
     private JLabel passwordLabel;
-    private JButton submitButton;
+    private JButton signUpButton;
     private JPanel mainPanel;
     private JCheckBox librarianCheckBox;
+    private JButton loginButton;
+    private JLabel welcomeSignLabel;
+    private JLabel guideLabel;
 
-    public createAccount() {
+    public account() {
         setContentPane(mainPanel);
         setTitle("Library Management System");
-        setSize(500,500);
+        setSize(600,550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
         passwordTxtField.setEchoChar('*');
         passwordTxtField.setColumns(10);
 
-        submitButton.addActionListener(new ActionListener() {
+        signUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = usernameTxtField.getText();
@@ -39,6 +42,14 @@ public class createAccount extends JFrame {
                 }
                 else if (LibraryDAO.checkUsername(username)) {
                     JOptionPane.showMessageDialog(null, "This username already exists.");
+                }
+                // User has successfully created a new account
+                else if (username != "" && password != "") {
+                    JOptionPane.showMessageDialog(null, "You have successfully created a new account.");
+
+                    // Once user clicks the sign-up button, the username and password text fields are automatically erased.
+                    usernameTxtField.setText(null);
+                    passwordTxtField.setText(null);
                 }
 
                 else {
@@ -63,7 +74,7 @@ public class createAccount extends JFrame {
             }
         });
 
-        submitButton.addActionListener(new ActionListener() {
+        signUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 login window = new login();
@@ -71,9 +82,43 @@ public class createAccount extends JFrame {
         });
 
 
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    String username = usernameTxtField.getText();
+                    String password = passwordTxtField.getText();
+
+
+                    boolean x = LibraryDAO.login(username, password);
+                    if (x == true && librarianCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(null, "Username and password are correct!");
+                        librarianView window = new librarianView();
+                        setVisible(true);
+
+                    }
+                    else if (x == true && !librarianCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(null, "Username and password are correct!");
+                        userView window = new userView();
+                        setVisible(true);
+
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null, "Username and password are not correct! Please try again.");
+                    }
+
+                }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+        });
+
+
     }
 
     public static void main(String[] args) {
-        createAccount myFrame = new createAccount();
+        account myFrame = new account();
     }
 }
