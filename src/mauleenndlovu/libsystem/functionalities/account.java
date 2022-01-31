@@ -55,7 +55,7 @@ public class account extends JFrame {
                         JOptionPane.showMessageDialog(null, "Hello user! You have successfully created a new account.");
                         userView userWindow = new userView();
                         setVisible(false);
-                        //userWindow.setVisible(true);
+                        userWindow.setVisible(true);
                 }
 
                 else {
@@ -72,19 +72,11 @@ public class account extends JFrame {
                             window.setVisible(true);
 
                         }
-
-                        // Opens up the librarian view for the new added user.
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex);
                     }
                 }
-            }
-        });
-
-        signUpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                login window = new login();
             }
         });
 
