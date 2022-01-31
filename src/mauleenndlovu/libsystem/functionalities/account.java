@@ -43,13 +43,19 @@ public class account extends JFrame {
                 else if (LibraryDAO.checkUsername(username)) {
                     JOptionPane.showMessageDialog(null, "This username already exists.");
                 }
-                // User has successfully created a new account
-                else if (username != "" && password != "") {
-                    JOptionPane.showMessageDialog(null, "You have successfully created a new account.");
-
-                    // Once user clicks the sign-up button, the username and password text fields are automatically erased.
-                    usernameTxtField.setText(null);
-                    passwordTxtField.setText(null);
+                // Librarian has successfully created a new account
+                else if (username != "" && password != "" && librarianCheckBox.isSelected()) {
+                    JOptionPane.showMessageDialog(null, "Hello librarian! You have successfully created a new account.");
+                    librarianView libWindow = new librarianView();
+                    setVisible(false);
+                    libWindow.setVisible(true);
+                }
+                    // User has successfully created a new account
+                else if (username != "" && password != "" && !librarianCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(null, "Hello user! You have successfully created a new account.");
+                        userView userWindow = new userView();
+                        setVisible(false);
+                        //userWindow.setVisible(true);
                 }
 
                 else {
@@ -62,7 +68,8 @@ public class account extends JFrame {
                         if (x > 0 && librarianCheckBox.isSelected()) {
                             JOptionPane.showMessageDialog(null,"New user added!");
                             librarianView window = new librarianView();
-                           // window.UIFrame.setVisible(true);
+                            setVisible(false);
+                            window.setVisible(true);
 
                         }
 
@@ -81,28 +88,34 @@ public class account extends JFrame {
             }
         });
 
-
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                String username = usernameTxtField.getText();
+                String password = passwordTxtField.getText();
+
+                if (username.contentEquals("")) {
+                    JOptionPane.showMessageDialog(null, "Please enter a username!");
+                }
+                else if (password.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Please enter a password!");
+                }
+
                 try {
-                    String username = usernameTxtField.getText();
-                    String password = passwordTxtField.getText();
-
-
                     boolean x = LibraryDAO.login(username, password);
                     if (x == true && librarianCheckBox.isSelected()) {
                         JOptionPane.showMessageDialog(null, "Username and password are correct!");
                         librarianView window = new librarianView();
-                        setVisible(true);
+                        setVisible(false);
+                        window.setVisible(true);
 
                     }
                     else if (x == true && !librarianCheckBox.isSelected()) {
                         JOptionPane.showMessageDialog(null, "Username and password are correct!");
                         userView window = new userView();
-                        setVisible(true);
-
+                        //setVisible(false);
+                        //window.setVisible(true);
                     }
                     else {
                         JOptionPane.showMessageDialog(null, "Username and password are not correct! Please try again.");
@@ -114,8 +127,6 @@ public class account extends JFrame {
                 }
             }
         });
-
-
     }
 
     public static void main(String[] args) {
