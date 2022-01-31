@@ -40,9 +40,10 @@ public class librarianView extends JFrame {
 
         setContentPane(mainPanel);
         setTitle("Librarian View");
-        setSize(500,500);
+        setSize(700,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+
 
 
 
@@ -101,7 +102,7 @@ public class librarianView extends JFrame {
             JOptionPane.showMessageDialog(null, ex);
         }
 
-        // Auto fill in the txt boxex
+        // Autofill in the txt boxes
         bookTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -118,22 +119,6 @@ public class librarianView extends JFrame {
         });
     }
 
-    private void printUsers() {
-
-        try {
-            String sql = "select user_ID, Username from Users";
-            PreparedStatement pst = connection.prepareStatement(sql);
-
-            ResultSet rs = pst.executeQuery();
-            bookTable.setModel(DbUtils.resultSetToTableModel(rs));
-
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-
     public void add() {
 
         try {
@@ -141,6 +126,7 @@ public class librarianView extends JFrame {
             String bookAuthor = authorNameTxtField.getText();
             String quantity = bookQuantityTxtField.getText();
             int bookQuantity = Integer.parseInt(quantity);
+
 
             int x = mauleenndlovu.libsystem.DAO.LibraryDAO.addBook(bookName, bookAuthor, bookQuantity);
             if (x > 0) {

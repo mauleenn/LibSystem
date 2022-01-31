@@ -127,7 +127,10 @@
             <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <font name="Georgia" size="13"/>
+          <selectionBackground color="-5186596"/>
+        </properties>
       </component>
     </children>
   </grid>
