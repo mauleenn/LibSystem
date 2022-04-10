@@ -31,51 +31,37 @@ public class account extends JFrame {
         signUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameTxtField.getText();
-                String password = String.copyValueOf(passwordTxtField.getPassword());
 
-                if (username.contentEquals("")) {
-                    JOptionPane.showMessageDialog(null, "Please enter a username!");
-                }
-                else if (password.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Please enter a password!");
-                }
-                else if (LibraryDAO.checkUsername(username)) {
-                    JOptionPane.showMessageDialog(null, "This username already exists.");
-                }
-                // Librarian has successfully created a new account
-                else if (username != "" && password != "" && librarianCheckBox.isSelected()) {
-                    JOptionPane.showMessageDialog(null, "Hello librarian! You have successfully created a new account.");
-                    librarianView libWindow = new librarianView();
-                    setVisible(false);
-                    libWindow.setVisible(true);
-                }
-                    // User has successfully created a new account
-                else if (username != "" && password != "" && !librarianCheckBox.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Hello user! You have successfully created a new account.");
+                try {
+                    String username = usernameTxtField.getText();
+                    String password = String.copyValueOf(passwordTxtField.getPassword());
+
+                    int x = mauleenndlovu.libsystem.DAO.LibraryDAO.saveLibrarian(username, password);
+
+                    if (x > 0 && librarianCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(account.this, "Hello librarian! You have successfully created a new account.");
+                        librarianView libWindow = new librarianView();
+                        setVisible(false);
+                        libWindow.setVisible(true);
+                    }
+                    else if (x > 0 && !librarianCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(account.this, "Hello user! You have successfully created a new account.");
                         userView userWindow = new userView();
                         setVisible(false);
                         userWindow.setVisible(true);
+                    }
+                    else if (password.equals("")) {
+                        JOptionPane.showMessageDialog(account.this, "Please enter a password!");
+                    }
+                    else if (LibraryDAO.checkUsername(username)) {
+                        JOptionPane.showMessageDialog(account.this, "This username already exists.");
+                    }
+                    else if (username.contentEquals("")) {
+                        JOptionPane.showMessageDialog(account.this, "Please enter a username!");
+                    }
                 }
-
-                else {
-                    try {
-
-                        // Functionality is included in the LibraryDAO class
-                        int x = LibraryDAO.createAccount(username,password);
-                        int y = LibraryDAO.createAccount(username, password);
-
-                        if (x > 0 && librarianCheckBox.isSelected()) {
-                            JOptionPane.showMessageDialog(null,"New user added!");
-                            librarianView window = new librarianView();
-                            setVisible(false);
-                            window.setVisible(true);
-
-                        }
-                    }
-                    catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, ex);
-                    }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(account.this, ex);
                 }
             }
         });
@@ -85,32 +71,32 @@ public class account extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 String username = usernameTxtField.getText();
-                String password = passwordTxtField.getText();
+                String password = String.copyValueOf(passwordTxtField.getPassword());
 
                 if (username.contentEquals("")) {
-                    JOptionPane.showMessageDialog(null, "Please enter a username!");
+                    JOptionPane.showMessageDialog(account.this, "Please enter a username!");
                 }
                 else if (password.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Please enter a password!");
+                    JOptionPane.showMessageDialog(account.this, "Please enter a password!");
                 }
 
                 try {
-                    boolean x = LibraryDAO.login(username, password);
-                    if (x == true && librarianCheckBox.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Username and password are correct!");
+                    boolean x = LibraryDAO.validateLibrarian(username, password);
+                    if (LibraryDAO.validateLibrarian(username, password) && librarianCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(account.this, "Username and password are correct!");
                         librarianView window = new librarianView();
                         setVisible(false);
                         window.setVisible(true);
 
                     }
                     else if (x == true && !librarianCheckBox.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Username and password are correct!");
+                        JOptionPane.showMessageDialog(account.this, "Username and password are correct!");
                         userView window = new userView();
                         //setVisible(false);
                         //window.setVisible(true);
                     }
                     else {
-                        JOptionPane.showMessageDialog(null, "Username and password are not correct! Please try again.");
+                        JOptionPane.showMessageDialog(account.this, "Username and password are not correct! Please try again.");
                     }
 
                 }

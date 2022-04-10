@@ -7,12 +7,10 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class librarianView extends JFrame {
     private JPanel mainPanel;
@@ -23,7 +21,7 @@ public class librarianView extends JFrame {
     private JLabel authorName;
     private JLabel bookTitle;
     private JLabel bookQuantity;
-    private JLabel bookID;
+    private JLabel bookCallNO;
     private JButton searchButton;
     private JButton addButton;
     private JButton removeButton;
@@ -31,8 +29,13 @@ public class librarianView extends JFrame {
     private JButton updateButton;
     private JButton viewBooksButton;
     private JTable bookTable;
+    private JButton issueBookButton;
+    private JButton viewIssuedBooksButton;
+    private JButton returnBookButton;
+    private JButton logoutButton;
 
     Connection connection = null;
+
 
     public librarianView() {
 
@@ -43,8 +46,6 @@ public class librarianView extends JFrame {
         setSize(700,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-
-
 
 
         searchButton.addActionListener(new ActionListener() {
@@ -64,6 +65,8 @@ public class librarianView extends JFrame {
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ((DefaultTableModel)bookTable.getModel()).removeRow(2);
+
                 remove();
             }
         });
@@ -72,17 +75,24 @@ public class librarianView extends JFrame {
         viewBooksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateTable();
+                viewBooks();
+            }
+        });
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logout();
             }
         });
     }
 
 
-    public void search() {
+    private void search() {
 
         try {
             bookTable.setModel(new DefaultTableModel( new Object[][] {},
-                    new String[] { "Book ID", "Book Name", "Book Author", "Quantity"}));
+                    new String[] {"Book ID", "Book Name", "Book Author", "Quantity"}));
 
             bookTitleTxtField.setColumns(10);
             authorNameTxtField.setColumns(10);
@@ -119,28 +129,33 @@ public class librarianView extends JFrame {
         });
     }
 
-    public void add() {
+    /**
+     *  Adding a new book to the database.
+     */
+    private void add() {
 
         try {
-            String bookName = bookTitleTxtField.getText();
-            String bookAuthor = authorNameTxtField.getText();
+            String callno = bookID_TxtField.getText();
+            String book_name = bookTitleTxtField.getText();
+            String book_author = authorNameTxtField.getText();
             String quantity = bookQuantityTxtField.getText();
-            int bookQuantity = Integer.parseInt(quantity);
+            int book_quantity = Integer.parseInt(quantity);
 
-
-            int x = mauleenndlovu.libsystem.DAO.LibraryDAO.addBook(bookName, bookAuthor, bookQuantity);
+            int x = mauleenndlovu.libsystem.DAO.LibraryDAO.addBook(callno, book_name, book_author, book_quantity);
             if (x > 0) {
-                JOptionPane.showMessageDialog(null, "Book has been successfully added!");
-            } else {
-                JOptionPane.showMessageDialog(null, "An error has occurred, book has not been added.");
+                JOptionPane.showMessageDialog(librarianView.this, "Book has been successfully added!");
             }
-        } catch (Exception ex) {
+            else {
+                JOptionPane.showMessageDialog(librarianView.this, "An error has occurred, book has not been added.");
+            }
+        }
+        catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex);
         }
         updateTable();
     }
 
-    public void remove() {
+    private void remove() {
 
         String ID = bookID_TxtField.getText();
         int bookID = Integer.parseInt(ID);
@@ -161,7 +176,6 @@ public class librarianView extends JFrame {
         clearFields();
     }
 
-    // UPDATE TABLE AFTER MODIFYING IT
     private void updateTable() {
 
         try {
@@ -178,12 +192,96 @@ public class librarianView extends JFrame {
 
     }
 
-    public void clearFields() {
-        bookID_TxtField.setText(null);
-        bookTitleTxtField.setText(null);
-        authorNameTxtField.setText(null);
-        bookQuantityTxtField.setText(null);
+    private void clearFields() {
+        bookID_TxtField.setText("");
+        bookTitleTxtField.setText("");
+        authorNameTxtField.setText("");
+        bookQuantityTxtField.setText("");
     }
+
+    private void clearTable() {
+
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearFields();
+            }
+        });
+    }
+
+    private void viewBooks() {
+        String data[][]=null;
+        String column[]=null;
+        try{
+            Connection con=SqlConnection.dbConnect();
+            PreparedStatement ps=con.prepareStatement("SELECT * FROM Books",ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs=ps.executeQuery();
+
+            ResultSetMetaData rsmd=rs.getMetaData();
+            int cols=rsmd.getColumnCount();
+            column=new String[cols];
+            for(int i=1;i<=cols;i++){
+                column[i-1]=rsmd.getColumnName(i);
+            }
+
+            rs.last();
+            int rows=rs.getRow();
+            rs.beforeFirst();
+
+            data=new String[rows][cols];
+            int count=0;
+            while(rs.next()){
+                for(int i=1;i<=cols;i++){
+                    data[count][i-1]=rs.getString(i);
+                }
+                count++;
+            }
+            con.close();
+        }catch(Exception e){System.out.println(e);}
+
+        bookTable = new JTable(data,column);
+        JScrollPane sp=new JScrollPane(bookTable);
+    }
+
+    private void logout() {
+        account accountWindow = new account();
+        setVisible(false);
+        accountWindow.setVisible(true);
+    }
+
+
+    private void showTableColumns() {
+
+        try {
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Code");
+            model.addColumn("Name");
+            model.addColumn("Quantity");
+            model.addColumn("Unit Price");
+            model.addColumn("Price");
+            bookTable = new JTable(model);
+
+            String[] rowNames = {"Book ID: ", "Book Call #: ", "Book Title: ", "Book Author: ", "Book Quantity: ", "Date Added: "};
+
+            String[][] value = new String[1][6];
+            JTable bookTable = new JTable(value, rowNames);
+            bookTable.setBounds(800, 450, 1100, 80);
+            bookTable.setBorder(BorderFactory.createLineBorder(Color.black, 2, true));
+            bookTable.setRowHeight(20);
+            bookTable.setForeground(Color.BLACK);
+            bookTable.setBackground(Color.lightGray);
+
+            JFrame bookFrame = new JFrame();
+            bookFrame.setSize(700,500);
+            bookFrame.add(new JScrollPane(bookTable));
+            bookFrame.setVisible(true);
+
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
     public static void main(String[] args) {
         librarianView myFrame = new librarianView();
     }
